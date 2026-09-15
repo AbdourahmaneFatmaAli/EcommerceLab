@@ -16,7 +16,9 @@ exit;
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Add Task</title></head>
+<head><title>Add Task</title>
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
 <h2>Add Task</h2>
 <form method="POST" action="create.php">
@@ -32,6 +34,6 @@ exit;
 </select><br>
 <button type="submit">Save Task</button>
 </form>
-<a href="index.php">Back</a>
+<a class="back-link" href="index.php">Back</a>
 </body>
 </html>
