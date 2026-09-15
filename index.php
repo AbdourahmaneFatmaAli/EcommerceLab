@@ -4,7 +4,9 @@ $result = $conn->query("SELECT * FROM tasks ORDER BY created_at DESC");
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Tasks</title></head>
+<head><title>Tasks</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
 <h1>My Tasks</h1>
 <a href="create.php">+ Add Task</a>
