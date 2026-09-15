@@ -24,7 +24,9 @@ if (!$task) { die("Task not found."); }
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Edit Task</title></head>
+<head><title>Edit Task</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
 <h2>Edit Task</h2>
 <form method="POST" action="edit.php">
@@ -46,6 +48,7 @@ required><br>
 </select><br>
 <button type="submit">Update Task</button>
 </form>
-<a href="index.php">Back</a>
+<a class="back-link" href="index.php">Back</a>
+  
 </body>
 </html>
