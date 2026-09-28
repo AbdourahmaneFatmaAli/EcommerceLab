@@ -1,0 +1,270 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #fff5f8;
+    color: #333;
+    line-height: 1.6;
+}
+
+nav {
+    background-color: #d63384;
+    padding: 16px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    box-shadow: 0 3px 12px rgba(214, 51, 132, 0.18);
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #ffe0ed;
+    text-decoration: underline;
+}
+
+nav span {
+    color: #ffe0ed;
+}
+
+main {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+h1 {
+    margin-bottom: 25px;
+    color: #d63384;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #b02a6b;
+}
+
+h3 {
+    color: #d63384;
+}
+
+a {
+    color: #d63384;
+}
+
+a:hover {
+    color: #b02a6b;
+}
+
+form {
+    max-width: 600px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #f8d5e3;
+    box-shadow: 0 5px 20px rgba(214, 51, 132, 0.08);
+}
+
+form div {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #555;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #e4b7c9;
+    border-radius: 7px;
+    font-size: 15px;
+    background-color: white;
+    color: #333;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #d63384;
+    box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.10);
+}
+
+button {
+    background-color: #d63384;
+    color: white;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background-color: #b02a6b;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.field-error {
+    display: block;
+    color: #c2185b;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.error-message {
+    background-color: #ffe5ef;
+    color: #a61e4d;
+    padding: 12px 15px;
+    border-radius: 7px;
+    border-left: 4px solid #d63384;
+    margin-bottom: 20px;
+}
+
+.success-message {
+    background-color: #e6f4ea;
+    color: #1b5e20;
+    padding: 12px 15px;
+    border-radius: 7px;
+    margin-bottom: 20px;
+}
+
+.home-container {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.welcome-box {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    border: 1px solid #f8d5e3;
+    box-shadow: 0 5px 20px rgba(214, 51, 132, 0.08);
+}
+
+.welcome-box h1 {
+    color: #d63384;
+}
+
+.welcome-box p {
+    color: #555;
+}
+
+.account-box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #f8d5e3;
+    box-shadow: 0 5px 20px rgba(214, 51, 132, 0.08);
+}
+
+.account-info {
+    margin-bottom: 10px;
+}
+
+.account-info strong {
+    display: inline-block;
+    width: 130px;
+    color: #d63384;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(214, 51, 132, 0.08);
+}
+
+th,
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1d5e1;
+    text-align: left;
+}
+
+th {
+    background-color: #d63384;
+    color: white;
+}
+
+tr:hover {
+    background-color: #fff0f5;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+footer {
+    margin-top: 50px;
+    padding: 25px;
+    text-align: center;
+    background-color: #d63384;
+    color: white;
+}
+
+footer p {
+    margin: 0;
+}
+
+footer a {
+    color: white;
+}
+
+@media (max-width: 600px) {
+    nav {
+        padding: 14px 15px;
+    }
+
+    main,
+    .home-container {
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    form {
+        padding: 20px;
+    }
+
+    .account-info strong {
+        display: block;
+        width: auto;
+    }
+
+    table {
+        font-size: 14px;
+        display: block;
+        overflow-x: auto;
+    }
+
+    th,
+    td {
+        padding: 8px;
+        white-space: nowrap;
+    }
+}
