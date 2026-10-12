@@ -47,7 +47,7 @@ if ($editId !== '') {
         <?php echo $editBrand ? "Edit Brand" : "Manage Brands"; ?>
     </title>
 
-    <link rel="stylesheet" href="/Ecommerce-class/css/style.css">
+   <link rel="stylesheet" href="/~fatma.abdourahmane/Ecommerce-class/Lab3/css/style.css">
 
 </head>
 

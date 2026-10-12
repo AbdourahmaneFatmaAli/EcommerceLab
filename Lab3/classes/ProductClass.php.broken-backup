@@ -1,0 +1,786 @@
+
+<?php
+
+require_once __DIR__ . "/../core/db_class.php";
+
+class ProductClass extends Database
+{
+    // ==================== BRANDS ====================
+
+    public function brandExists($brand_name)
+    {
+        $sql = "SELECT brand_id
+                FROM brands
+                WHERE LOWER(TRIM(brand_name)) = LOWER(TRIM(?))
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$brand_name]);
+    }
+
+    public function addBrand($brand_name)
+    {
+        if ($this->brandExists($brand_name)) {
+            return false;
+        }
+
+        $sql = "INSERT INTO brands (brand_name) VALUES (?)";
+
+        return $this->execute($sql, [$brand_name]);
+    }
+
+    public function getAllBrands()
+    {
+        $sql = "SELECT * FROM brands ORDER BY brand_name ASC";
+
+        return $this->fetchAll($sql);
+    }
+
+    public function getBrandById($brand_id)
+    {
+        $sql = "SELECT *
+                FROM brands
+                WHERE brand_id = ?
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$brand_id]);
+    }
+
+    public function updateBrand($brand_id, $brand_name)
+    {
+        $sql = "SELECT brand_id
+                FROM brands
+                WHERE LOWER(TRIM(brand_name)) = LOWER(TRIM(?))
+                  AND brand_id != ?
+                LIMIT 1";
+
+        if ($this->fetchOne($sql, [$brand_name, $brand_id])) {
+            return false;
+        }
+
+        $sql = "UPDATE brands
+                SET brand_name = ?
+                WHERE brand_id = ?";
+
+        return $this->execute($sql, [$brand_name, $brand_id]);
+    }
+
+
+    // ==================== CATEGORIES ====================
+
+    public function categoryExists($cat_name, $brand_id)
+    {
+        $sql = "SELECT cat_id
+                FROM categories
+                WHERE LOWER(TRIM(cat_name)) = LOWER(TRIM(?))
+                  AND brand_id = ?
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$cat_name, $brand_id]);
+    }
+
+    public function addCategory($cat_name, $brand_id)
+    {
+        if ($this->categoryExists($cat_name, $brand_id)) {
+            return false;
+        }
+
+        $sql = "INSERT INTO categories (cat_name, brand_id)
+                VALUES (?, ?)";
+
+        return $this->execute($sql, [$cat_name, $brand_id]);
+    }
+
+    public function getAllCategories()
+    {
+        $sql = "SELECT c.*, b.brand_name
+                FROM categories c
+                LEFT JOIN brands b ON c.brand_id = b.brand_id
+                ORDER BY c.cat_name ASC";
+
+        return $this->fetchAll($sql);
+    }
+
+    public function getCategoryById($cat_id)
+    {
+        $sql = "SELECT *
+                FROM categories
+                WHERE cat_id = ?
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$cat_id]);
+    }
+
+    public function updateCategory($cat_id, $cat_name, $brand_id)
+    {
+        $sql = "SELECT cat_id
+                FROM categories
+                WHERE LOWER(TRIM(cat_name)) = LOWER(TRIM(?))
+                  AND brand_id = ?
+                  AND cat_id != ?
+                LIMIT 1";
+
+        if ($this->fetchOne($sql, [$cat_name, $brand_id, $cat_id])) {
+            return false;
+        }
+
+        $sql = "UPDATE categories
+                SET cat_name = ?, brand_id = ?
+                WHERE cat_id = ?";
+
+        return $this->execute($sql, [
+            $cat_name,
+            $brand_id,
+            $cat_id
+        ]);
+    }
+
+
+    // ==================== PRODUCT DUPLICATE CHECK ====================
+
+    /**
+     * Check whether another product has the same details and image.
+     *
+     * Image filenames may differ even when the uploaded image contents
+     * are identical, so compare SHA-256 hashes of the actual image files.
+     */
+    private function duplicateProductExists(
+        $product_id,
+        $product_cat,
+        $product_brand,
+        $product_title,
+        $product_price,
+        $product_desc,
+        $product_image,
+        $product_keywords
+    ) {
+        $checkSql = "SELECT p.product_id, p.product_image
+                     FROM products p
+                     INNER JOIN categories c
+                         ON p.product_cat = c.cat_id
+                     WHERE p.product_id != ?
+                       AND p.product_brand = ?
+                       AND LOWER(TRIM(c.cat_name)) = (
+                           SELECT LOWER(TRIM(cat_name))
+                           FROM categories
+                           WHERE cat_id = ?
+                       )
+                       AND LOWER(TRIM(p.product_title)) =
+                           LOWER(TRIM(?))
+                       AND p.product_price = ?
+                       AND TRIM(COALESCE(p.product_desc, '')) =
+                           TRIM(?)
+                       AND LOWER(TRIM(COALESCE(p.product_keywords, ''))) =
+                           LOWER(TRIM(?))";
+
+        $existingProducts = $this->fetchAll($checkSql, [
+            $product_id,
+            $product_brand,
+            $product_cat,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_keywords
+        ]);
+
+        if (empty($existingProducts)) {
+            return false;
+        }
+
+        $imageDirectory = __DIR__ . '/../images/products/';
+
+        $newImagePath = $imageDirectory . basename($product_image);
+
+        if (!is_file($newImagePath)) {
+            return false;
+        }
+
+        $newImageHash = hash_file('sha256', $newImagePath);
+
+        if ($newImageHash === false) {
+            return false;
+        }
+
+        foreach ($existingProducts as $existingProduct) {
+            $existingImagePath = $imageDirectory .
+                basename($existingProduct['product_image']);
+
+            if (!is_file($existingImagePath)) {
+                continue;
+            }
+
+            $existingImageHash = hash_file(
+                'sha256',
+                $existingImagePath
+            );
+
+            if (
+                $existingImageHash !== false &&
+                hash_equals($existingImageHash, $newImageHash)
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    // ==================== PRODUCTS ====================
+
+    public function addProduct(
+        $product_cat,
+        $product_brand,
+        $product_title,
+        $product_price,
+        $product_desc,
+        $product_image,
+        $product_keywords
+    ) {
+        // -1 means there is no existing product ID to exclude.
+        if ($this->duplicateProductExists(
+            -1,
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords
+        )) {
+            return false;
+        }
+
+        $sql = "INSERT INTO products
+                    (
+                        product_cat,
+                        product_brand,
+                        product_title,
+                        product_price,
+                        product_desc,
+                        product_image,
+                        product_keywords
+                    )
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        return $this->execute($sql, [
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords
+        ]);
+    }
+
+    public function updateProduct(
+        $product_id,
+        $product_cat,
+        $product_brand,
+        $product_title,
+        $product_price,
+        $product_desc,
+        $product_image,
+        $product_keywords
+    ) {
+        // Exclude the product being edited from the duplicate check.
+        if ($this->duplicateProductExists(
+            $product_id,
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords
+        )) {
+            return false;
+        }
+
+        $sql = "UPDATE products
+                SET product_cat = ?,
+                    product_brand = ?,
+                    product_title = ?,
+                    product_price = ?,
+                    product_desc = ?,
+                    product_image = ?,
+                    product_keywords = ?
+                WHERE product_id = ?";
+
+        return $this->execute($sql, [
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords,
+            $product_id
+        ]);
+    }
+
+    public function getProductById($product_id)
+    {
+        $sql = "SELECT p.*,
+                       c.cat_name,
+                       b.brand_name
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_id = ?
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$product_id]);
+    }
+
+    public function getAllProducts()
+    {
+        $sql = "SELECT p.*,
+                       c.cat_name,
+                       b.brand_name
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                ORDER BY p.product_id DESC";
+
+        return $this->fetchAll($sql);
+    }
+
+    public function getFeaturedProducts($limit = 6)
+    {
+        $limit = max(1, min(50, (int) $limit));
+
+        $sql = "SELECT p.*,
+
+<?php
+
+require_once __DIR__ . "/../core/db_class.php";
+
+class ProductClass extends Database
+{
+    // ==================== BRANDS ====================
+
+    public function brandExists($brand_name)
+    {
+        $sql = "SELECT brand_id
+                FROM brands
+                WHERE LOWER(TRIM(brand_name)) = LOWER(TRIM(?))
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$brand_name]);
+    }
+
+    public function addBrand($brand_name)
+    {
+        if ($this->brandExists($brand_name)) {
+            return false;
+        }
+
+        $sql = "INSERT INTO brands (brand_name) VALUES (?)";
+
+        return $this->execute($sql, [$brand_name]);
+    }
+
+    public function getAllBrands()
+    {
+        $sql = "SELECT * FROM brands ORDER BY brand_name ASC";
+
+        return $this->fetchAll($sql);
+    }
+
+    public function getBrandById($brand_id)
+    {
+        $sql = "SELECT *
+                FROM brands
+                WHERE brand_id = ?
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$brand_id]);
+    }
+
+    public function updateBrand($brand_id, $brand_name)
+    {
+        $sql = "SELECT brand_id
+                FROM brands
+                WHERE LOWER(TRIM(brand_name)) = LOWER(TRIM(?))
+                  AND brand_id != ?
+                LIMIT 1";
+
+        if ($this->fetchOne($sql, [$brand_name, $brand_id])) {
+            return false;
+        }
+
+        $sql = "UPDATE brands
+                SET brand_name = ?
+                WHERE brand_id = ?";
+
+        return $this->execute($sql, [$brand_name, $brand_id]);
+    }
+
+
+    // ==================== CATEGORIES ====================
+
+    public function categoryExists($cat_name, $brand_id)
+    {
+        $sql = "SELECT cat_id
+                FROM categories
+                WHERE LOWER(TRIM(cat_name)) = LOWER(TRIM(?))
+                  AND brand_id = ?
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$cat_name, $brand_id]);
+    }
+
+    public function addCategory($cat_name, $brand_id)
+    {
+        if ($this->categoryExists($cat_name, $brand_id)) {
+            return false;
+        }
+
+        $sql = "INSERT INTO categories (cat_name, brand_id)
+                VALUES (?, ?)";
+
+        return $this->execute($sql, [$cat_name, $brand_id]);
+    }
+
+    public function getAllCategories()
+    {
+        $sql = "SELECT c.*, b.brand_name
+                FROM categories c
+                LEFT JOIN brands b ON c.brand_id = b.brand_id
+                ORDER BY c.cat_name ASC";
+
+        return $this->fetchAll($sql);
+    }
+
+    public function getCategoryById($cat_id)
+    {
+        $sql = "SELECT *
+                FROM categories
+                WHERE cat_id = ?
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$cat_id]);
+    }
+
+    public function updateCategory($cat_id, $cat_name, $brand_id)
+    {
+        $sql = "SELECT cat_id
+                FROM categories
+                WHERE LOWER(TRIM(cat_name)) = LOWER(TRIM(?))
+                  AND brand_id = ?
+                  AND cat_id != ?
+                LIMIT 1";
+
+        if ($this->fetchOne($sql, [$cat_name, $brand_id, $cat_id])) {
+            return false;
+        }
+
+        $sql = "UPDATE categories
+                SET cat_name = ?, brand_id = ?
+                WHERE cat_id = ?";
+
+        return $this->execute($sql, [
+            $cat_name,
+            $brand_id,
+            $cat_id
+        ]);
+    }
+
+
+    // ==================== PRODUCT DUPLICATE CHECK ====================
+
+    private function duplicateProductExists(
+        $product_id,
+        $product_cat,
+        $product_brand,
+        $product_title,
+        $product_price,
+        $product_desc,
+        $product_image,
+        $product_keywords
+    ) {
+        $checkSql = "SELECT p.product_id, p.product_image
+                     FROM products p
+                     INNER JOIN categories c
+                         ON p.product_cat = c.cat_id
+                     WHERE p.product_id != ?
+                       AND p.product_brand = ?
+                       AND LOWER(TRIM(c.cat_name)) = (
+                           SELECT LOWER(TRIM(cat_name))
+                           FROM categories
+                           WHERE cat_id = ?
+                       )
+                       AND LOWER(TRIM(p.product_title)) =
+                           LOWER(TRIM(?))
+                       AND p.product_price = ?
+                       AND TRIM(COALESCE(p.product_desc, '')) =
+                           TRIM(?)
+                       AND LOWER(TRIM(COALESCE(p.product_keywords, ''))) =
+                           LOWER(TRIM(?))";
+
+        $existingProducts = $this->fetchAll($checkSql, [
+            $product_id,
+            $product_brand,
+            $product_cat,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_keywords
+        ]);
+
+        if (empty($existingProducts)) {
+            return false;
+        }
+
+        $imageDirectory = __DIR__ . '/../images/products/';
+        $newImagePath = $imageDirectory . basename($product_image);
+
+        if (!is_file($newImagePath)) {
+            return false;
+        }
+
+        $newImageHash = hash_file('sha256', $newImagePath);
+
+        if ($newImageHash === false) {
+            return false;
+        }
+
+        foreach ($existingProducts as $existingProduct) {
+            $existingImagePath = $imageDirectory .
+                basename($existingProduct['product_image']);
+
+            if (!is_file($existingImagePath)) {
+                continue;
+            }
+
+            $existingImageHash = hash_file(
+                'sha256',
+                $existingImagePath
+            );
+
+            if (
+                $existingImageHash !== false &&
+                hash_equals($existingImageHash, $newImageHash)
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Public method used by the update action to show a specific message.
+    public function productDuplicateExists(
+        $product_id,
+        $product_cat,
+        $product_brand,
+        $product_title,
+        $product_price,
+        $product_desc,
+        $product_image,
+        $product_keywords
+    ) {
+        return $this->duplicateProductExists(
+            $product_id,
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords
+        );
+    }
+
+
+    // ==================== PRODUCTS ====================
+
+    public function addProduct(
+        $product_cat,
+        $product_brand,
+        $product_title,
+        $product_price,
+        $product_desc,
+        $product_image,
+        $product_keywords
+    ) {
+        // -1 means no existing product should be excluded.
+        if ($this->duplicateProductExists(
+            -1,
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords
+        )) {
+            return false;
+        }
+
+        $sql = "INSERT INTO products
+                    (
+                        product_cat,
+                        product_brand,
+                        product_title,
+                        product_price,
+                        product_desc,
+                        product_image,
+                        product_keywords
+                    )
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        return $this->execute($sql, [
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords
+        ]);
+    }
+
+    public function updateProduct(
+        $product_id,
+        $product_cat,
+        $product_brand,
+        $product_title,
+        $product_price,
+        $product_desc,
+        $product_image,
+        $product_keywords
+    ) {
+        if ($this->duplicateProductExists(
+            $product_id,
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords
+        )) {
+            return false;
+        }
+
+        $sql = "UPDATE products
+                SET product_cat = ?,
+                    product_brand = ?,
+                    product_title = ?,
+                    product_price = ?,
+                    product_desc = ?,
+                    product_image = ?,
+                    product_keywords = ?
+                WHERE product_id = ?";
+
+        return $this->execute($sql, [
+            $product_cat,
+            $product_brand,
+            $product_title,
+            $product_price,
+            $product_desc,
+            $product_image,
+            $product_keywords,
+            $product_id
+        ]);
+    }
+
+    public function getProductById($product_id)
+    {
+        $sql = "SELECT p.*,
+                       c.cat_name,
+                       b.brand_name
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_id = ?
+                LIMIT 1";
+
+        return $this->fetchOne($sql, [$product_id]);
+    }
+
+    public function getAllProducts()
+    {
+        $sql = "SELECT p.*,
+                       c.cat_name,
+                       b.brand_name
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                ORDER BY p.product_id DESC";
+
+        return $this->fetchAll($sql);
+    }
+
+    public function getFeaturedProducts($limit = 6)
+    {
+        $limit = max(1, min(50, (int) $limit));
+
+        $sql = "SELECT p.*,
+                       c.cat_name,
+                       b.brand_name
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                ORDER BY p.product_id DESC
+                LIMIT " . $limit;
+
+        return $this->fetchAll($sql);
+    }
+
+    public function getProductsByCategory($cat_id)
+    {
+        $sql = "SELECT p.*,
+                       c.cat_name,
+                       b.brand_name
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_cat = ?
+                ORDER BY p.product_id DESC";
+
+        return $this->fetchAll($sql, [$cat_id]);
+    }
+
+    public function getProductsByBrand($brand_id)
+    {
+        $sql = "SELECT p.*,
+                       c.cat_name,
+                       b.brand_name
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_brand = ?
+                ORDER BY p.product_id DESC";
+
+        return $this->fetchAll($sql, [$brand_id]);
+    }
+
+    public function searchProducts($query)
+    {
+        $search = "%" . trim($query) . "%";
+
+        $sql = "SELECT p.*,
+                       c.cat_name,
+                       b.brand_name
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_title LIKE ?
+                   OR p.product_desc LIKE ?
+                   OR p.product_keywords LIKE ?
+                   OR c.cat_name LIKE ?
+                   OR b.brand_name LIKE ?
+                ORDER BY p.product_id DESC";
+
+        return $this->fetchAll($sql, [
+            $search,
+            $search,
+            $search,
+            $search,
+            $search
+        ]);
+    }
+}

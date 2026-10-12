@@ -1,7 +1,8 @@
 <?php
 
-require_once "core/core.php";
 
+
+require_once __DIR__ . "/views/home.php";
 
 ?>
 
@@ -26,3 +27,4 @@ require_once "core/core.php";
 
 </body>
 </html>
+

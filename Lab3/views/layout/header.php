@@ -3,7 +3,6 @@
 ?>
 
 <style>
-
     .site-nav {
         background: white;
         padding: 18px 30px;
@@ -65,7 +64,6 @@
     }
 
     @media (max-width: 700px) {
-
         .site-nav {
             padding: 15px;
         }
@@ -82,19 +80,14 @@
         .nav-welcome {
             display: none;
         }
-
     }
-
 </style>
 
 <nav class="site-nav">
-
     <div class="nav-left">
 
-        <a
-            href="/Ecommerce-class/index.php"
-            class="nav-link"
-        >
+        <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/index.php"
+           class="nav-link">
             Home
         </a>
 
@@ -108,10 +101,8 @@
 
             <span class="nav-divider">|</span>
 
-            <a
-                href="/Ecommerce-class/views/my_account.php"
-                class="nav-link"
-            >
+            <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/my_account.php"
+               class="nav-link">
                 My Account
             </a>
 
@@ -119,20 +110,23 @@
 
                 <span class="nav-divider">|</span>
 
-                <a
-                    href="/Ecommerce-class/views/admin/brand.php"
-                    class="nav-link"
-                >
+                <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/admin/brand.php"
+                   class="nav-link">
                     Brand
                 </a>
 
                 <span class="nav-divider">|</span>
 
-                <a
-                    href="/Ecommerce-class/views/admin/category.php"
-                    class="nav-link"
-                >
+                <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/admin/category.php"
+                   class="nav-link">
                     Category
+                </a>
+
+                <span class="nav-divider">|</span>
+
+                <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/admin/product.php"
+                   class="nav-link">
+                    Product
                 </a>
 
             <?php } ?>
@@ -141,19 +135,15 @@
 
             <span class="nav-divider">|</span>
 
-            <a
-                href="/Ecommerce-class/views/register.php"
-                class="nav-link"
-            >
+            <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/register.php"
+               class="nav-link">
                 Register
             </a>
 
             <span class="nav-divider">|</span>
 
-            <a
-                href="/Ecommerce-class/views/login.php"
-                class="nav-link"
-            >
+            <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/login.php"
+               class="nav-link">
                 Login
             </a>
 
@@ -163,13 +153,10 @@
 
     <?php if (is_logged_in()) { ?>
 
-        <a
-            href="/Ecommerce-class/logout.php"
-            class="nav-logout"
-        >
+        <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/logout.php"
+           class="nav-logout">
             Logout
         </a>
 
     <?php } ?>
-
 </nav>

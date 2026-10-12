@@ -1,15 +1,27 @@
-
 <?php
 
-require_once "../core/core.php";
+require_once __DIR__ . "/../core/core.php";
+
 require_login();
 
 $isAdmin = is_admin();
 
+$customerName = htmlspecialchars(
+    $_SESSION['customer_name'] ?? 'Customer',
+    ENT_QUOTES,
+    'UTF-8'
+);
+
+$customerEmail = htmlspecialchars(
+    $_SESSION['customer_email'] ?? '',
+    ENT_QUOTES,
+    'UTF-8'
+);
+
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
@@ -39,6 +51,7 @@ $isAdmin = is_admin();
             min-height: 260px;
             display: flex;
             align-items: center;
+            box-sizing: border-box;
         }
 
         .customer-hero {
@@ -132,7 +145,7 @@ $isAdmin = is_admin();
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 22px;
         }
 
@@ -148,15 +161,14 @@ $isAdmin = is_admin();
             box-shadow: 0 7px 20px rgba(214, 51, 132, 0.07);
             transition: all 0.25s ease;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
-        
         .dashboard-card:hover {
             transform: translateY(-6px);
             border-color: #e8a5c4;
             box-shadow: 0 15px 30px rgba(214, 51, 132, 0.14);
         }
-
 
         .dashboard-card h3 {
             margin: 0 0 10px;
@@ -172,6 +184,7 @@ $isAdmin = is_admin();
         }
 
         .link-card {
+            display: block;
             cursor: pointer;
         }
 
@@ -201,8 +214,6 @@ $isAdmin = is_admin();
             border-color: #f3d4e3;
             box-shadow: 0 7px 20px rgba(214, 51, 132, 0.07);
         }
-
-        
 
         .coming-soon {
             display: inline-block;
@@ -263,13 +274,10 @@ $isAdmin = is_admin();
 
             <div class="hero-content">
 
-                <span class="account-badge">
-                    ADMIN
-                </span>
+                <span class="account-badge">ADMIN</span>
 
                 <h1>
-                    Welcome back,
-                    <?php echo htmlspecialchars($_SESSION['customer_name']); ?>!
+                    Welcome back, <?php echo $customerName; ?>!
                 </h1>
 
                 <p>
@@ -279,121 +287,65 @@ $isAdmin = is_admin();
                 <div class="hero-details">
 
                     <div class="hero-detail">
-
-                        <span class="hero-detail-label">
-                            Email
-                        </span>
-
+                        <span class="hero-detail-label">Email</span>
                         <span class="hero-detail-value">
-                            <?php echo htmlspecialchars($_SESSION['customer_email']); ?>
+                            <?php echo $customerEmail; ?>
                         </span>
-
                     </div>
 
                     <div class="hero-detail">
-
-                        <span class="hero-detail-label">
-                            Account Type
-                        </span>
-
-                        <span class="hero-detail-value">
-                            Administrator
-                        </span>
-
+                        <span class="hero-detail-label">Account Type</span>
+                        <span class="hero-detail-value">Administrator</span>
                     </div>
 
                 </div>
 
             </div>
 
-            <div class="hero-heart">
-                ♡
-            </div>
+            <div class="hero-heart">♡</div>
 
         </section>
 
         <section class="dashboard-section">
 
             <div class="section-heading">
-
                 <h2>Store Management</h2>
-
-                <p>
-                    Quick access to the main areas of your store.
-                </p>
-
+                <p>Quick access to the main areas of your store.</p>
             </div>
 
             <div class="dashboard-grid">
 
                 <a
-                    href="/Ecommerce-class/views/admin/brand.php"
+                    href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/admin/brand.php"
                     class="dashboard-card link-card"
                 >
-
-                    <h3>
-                        Brands
-                    </h3>
-
-                    <p>
-                        Add and manage the brands available in your store.
-                    </p>
-
-                    <span class="link-label">
-                        Manage Brands
-                    </span>
-
+                    <h3>Brands</h3>
+                    <p>Add and manage the brands available in your store.</p>
+                    <span class="link-label">Manage Brands</span>
                 </a>
 
                 <a
-                    href="/Ecommerce-class/views/admin/category.php"
+                    href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/admin/category.php"
                     class="dashboard-card link-card"
                 >
+                    <h3>Categories</h3>
+                    <p>Organize your products into different categories.</p>
+                    <span class="link-label">Manage Categories</span>
+                </a>
 
-                    <h3>
-                        Categories
-                    </h3>
-
-                    <p>
-                        Organize your products into different categories.
-                    </p>
-
-                    <span class="link-label">
-                        Manage Categories
-                    </span>
-
+                <a
+                    href="/~fatma.abdourahmane/Ecommerce-class/Lab3/views/admin/product.php"
+                    class="dashboard-card link-card"
+                >
+                    <h3>Products</h3>
+                    <p>Add, edit, and manage the products available in your store.</p>
+                    <span class="link-label">Manage Products</span>
                 </a>
 
                 <div class="dashboard-card coming-soon-card">
-
-                    <h3>
-                        Products
-                    </h3>
-
-                    <p>
-                        Product management will be available here.
-                    </p>
-
-                    <span class="coming-soon">
-                        Coming soon
-                    </span>
-
-                </div>
-
-                <div class="dashboard-card coming-soon-card">
-
-                    <h3>
-                        Customers
-                    </h3>
-
-                    <p>
-                        View and manage your store customers.
-                    </p>
-
-                    <span class="coming-soon">
-                        Coming soon
-                    </span>
-
+                    <h3>Customers</h3>
+                    <p>View and manage your store customers.</p>
+                    <span class="coming-soon">Coming soon</span>
                 </div>
 
             </div>
@@ -406,125 +358,75 @@ $isAdmin = is_admin();
 
             <div class="hero-content">
 
-                <span class="account-badge">
-                    MY ACCOUNT
-                </span>
+                <span class="account-badge">MY ACCOUNT</span>
 
                 <h1>
-                    Welcome back,
-                    <?php echo htmlspecialchars($_SESSION['customer_name']); ?>!
+                    Welcome back, <?php echo $customerName; ?>!
                 </h1>
-
-               
 
                 <div class="hero-details">
 
                     <div class="hero-detail">
-
-                        <span class="hero-detail-label">
-                            Email
-                        </span>
-
+                        <span class="hero-detail-label">Email</span>
                         <span class="hero-detail-value">
-                            <?php echo htmlspecialchars($_SESSION['customer_email']); ?>
+                            <?php echo $customerEmail; ?>
                         </span>
-
                     </div>
 
                     <div class="hero-detail">
-
-                        <span class="hero-detail-label">
-                            Account Type
-                        </span>
-
-                        <span class="hero-detail-value">
-                            Customer
-                        </span>
-
+                        <span class="hero-detail-label">Account Type</span>
+                        <span class="hero-detail-value">Customer</span>
                     </div>
 
                 </div>
 
             </div>
 
-            <div class="hero-heart">
-                ♡
-            </div>
+            <div class="hero-heart">♡</div>
 
         </section>
 
         <section class="dashboard-section">
 
             <div class="section-heading">
-
                 <h2>Your Account</h2>
-
-                <p>
-                    Manage your account and explore your store activities.
-                </p>
-
+                <p>Manage your account and explore your store activities.</p>
             </div>
 
             <div class="dashboard-grid">
 
+                <a
+                    href="/~fatma.abdourahmane/Ecommerce-class/Lab3/index.php"
+                    class="dashboard-card link-card"
+                >
+                    <h3>Browse Products</h3>
+                    <p>
+                        Explore the products available in our store and find something you like.
+                    </p>
+                    <span class="link-label">Start Shopping</span>
+                </a>
+
                 <div class="dashboard-card">
-
-                    <h3>
-                        My Profile
-                    </h3>
-
-                    <p>
-                        View your personal account information.
-                    </p>
-
+                    <h3>My Profile</h3>
+                    <p>View your personal account information.</p>
                 </div>
 
                 <div class="dashboard-card coming-soon-card">
-
-                    <h3>
-                        My Orders
-                    </h3>
-
-                    <p>
-                        Your orders will appear here.
-                    </p>
-
-                    <span class="coming-soon">
-                        Coming soon
-                    </span>
-
+                    <h3>My Orders</h3>
+                    <p>Your orders will appear here.</p>
+                    <span class="coming-soon">Coming soon</span>
                 </div>
 
                 <div class="dashboard-card coming-soon-card">
-
-                    <h3>
-                        Favorites
-                    </h3>
-
-                    <p>
-                        Save products you love for later.
-                    </p>
-
-                    <span class="coming-soon">
-                        Coming soon
-                    </span>
-
+                    <h3>Favorites</h3>
+                    <p>Save products you love for later.</p>
+                    <span class="coming-soon">Coming soon</span>
                 </div>
 
                 <div class="dashboard-card coming-soon-card">
-
-                    <h3>
-                        Account Settings
-                    </h3>
-
-                    <p>
-                        Manage your account preferences.
-                    </p>
-
-                    <span class="coming-soon">
-                        Coming soon
-                    </span>
-
+                    <h3>Account Settings</h3>
+                    <p>Manage your account preferences.</p>
+                    <span class="coming-soon">Coming soon</span>
                 </div>
 
             </div>
@@ -540,3 +442,4 @@ $isAdmin = is_admin();
 </body>
 
 </html>
+
