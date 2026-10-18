@@ -8,5 +8,5 @@ $_SESSION = [];
 // then destroy the session itself
 session_destroy();
 
-header("Location: index.php");
+header("Location: /~fatma.abdourahmane/Ecommerce-class/Lab3/index.php");
 exit;

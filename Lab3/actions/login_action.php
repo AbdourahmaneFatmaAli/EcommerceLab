@@ -2,7 +2,7 @@
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: ../views/login.php");
+    header("Location: /~fatma.abdourahmane/Ecommerce-class/Lab3/views/login.php");
     exit;
 }
 

@@ -1,7 +1,7 @@
 <?php
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: ../views/register.php");
+    header("Location: /~fatma.abdourahmane/Ecommerce-class/Lab3/views/login.php");
     exit;
 }
 

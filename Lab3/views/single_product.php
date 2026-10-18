@@ -9,7 +9,7 @@ if (
     filter_var($_GET['pro_id'], FILTER_VALIDATE_INT) === false ||
     (int) $_GET['pro_id'] <= 0
 ) {
-    header("Location: home.php");
+    header("Location: /~fatma.abdourahmane/Ecommerce-class/Lab3/index.php");
     exit;
 }
 
@@ -19,7 +19,7 @@ $controller = new ProductController();
 $product = $controller->getProductById($productId);
 
 if (!$product) {
-    header("Location: home.php");
+    header("Location: /~fatma.abdourahmane/Ecommerce-class/Lab3/index.php");
     exit;
 }
 
@@ -34,7 +34,7 @@ if (!$product) {
 
     <title><?php echo htmlspecialchars($product['product_title']); ?></title>
 
-    <link rel="stylesheet" href="/Ecommerce-class/Lab3/css/style.css">
+    <link rel="stylesheet" href="/~fatma.abdourahmane/Ecommerce-class/Lab3/css/style.css">
 
     <style>
         .single-product {
@@ -120,7 +120,7 @@ if (!$product) {
         <?php if (!empty($product['product_image'])): ?>
 
             <img
-                src="/Ecommerce-class/Lab3/images/products/<?php echo rawurlencode(basename($product['product_image'])); ?>"
+                src="/~fatma.abdourahmane/Ecommerce-class/Lab3/images/products/<?php echo rawurlencode(basename($product['product_image'])); ?>"
                 alt="<?php echo htmlspecialchars($product['product_title']); ?>"
             >
 
@@ -166,13 +166,13 @@ if (!$product) {
 
         <a
             class="add-cart-link"
-            href="home.php?add_cart=<?php echo (int) $product['product_id']; ?>"
+           href="../actions/add_to_cart_action.php?add_cart=<?php echo (int) $product['product_id']; ?>"
         >
             Add to Cart
         </a>
 
         <p>
-            <a href="home.php">← Back to Products</a>
+            <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/index.php">Back to products</a>
         </p>
 
     </div>

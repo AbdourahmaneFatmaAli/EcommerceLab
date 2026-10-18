@@ -43,7 +43,7 @@ if ($editId !== '') {
     <title>
         <?php echo $editCategory ? "Edit Category" : "Manage Categories"; ?>
     </title>
-<link rel="stylesheet" href="/~fatma.abdourahmane/Ecommerce-class/Lab3/css/style.css">
+<link rel="stylesheet" href="/~fatma.abdourahmane/~fatma.abdourahmane/Ecommerce-class/Lab3/css/style.css">
 
 </head>
 

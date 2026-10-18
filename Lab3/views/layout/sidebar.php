@@ -12,14 +12,23 @@ $sidebarBrands = $sidebarController->getAllBrands();
 
 <style>
     .shop-sidebar {
-        width: 220px;
-        flex-shrink: 0;
-        padding: 22px;
-        background: #fff7fb;
-        border: 1px solid #f4d7e6;
-        border-radius: 16px;
-        box-shadow: 0 4px 14px rgba(180, 60, 120, 0.06);
-    }
+    width: 220px;
+    flex-shrink: 0;
+    padding: 22px;
+    box-sizing: border-box;
+
+    background: #fff7fb !important;
+    border: none !important;
+    border-radius: 12px;
+    box-shadow: none !important;
+
+    outline: none;
+}
+.shop-sidebar::before,
+.shop-sidebar::after {
+    content: none !important;
+    display: none !important;
+}
 
     .shop-sidebar h3 {
         margin: 0 0 14px;
@@ -46,6 +55,7 @@ $sidebarBrands = $sidebarController->getAllBrands();
         text-decoration: none;
         font-size: 14px;
         transition: background 0.2s ease, color 0.2s ease;
+        overflow-wrap: anywhere;
     }
 
     .shop-sidebar a:hover {
@@ -74,8 +84,7 @@ $sidebarBrands = $sidebarController->getAllBrands();
 
     @media (max-width: 700px) {
         .shop-sidebar {
-            width: auto;
-            box-sizing: border-box;
+            width: 100%;
             align-self: stretch;
         }
     }
@@ -100,7 +109,13 @@ $sidebarBrands = $sidebarController->getAllBrands();
         <?php foreach ($sidebarCategories as $category): ?>
             <li>
                 <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/?cat=<?php echo (int) $category['cat_id']; ?>">
-                    <?php echo htmlspecialchars($category['cat_name']); ?>
+                    <?php
+                    echo htmlspecialchars(
+                        $category['cat_name'],
+                        ENT_QUOTES,
+                        'UTF-8'
+                    );
+                    ?>
                 </a>
             </li>
         <?php endforeach; ?>
@@ -114,7 +129,13 @@ $sidebarBrands = $sidebarController->getAllBrands();
         <?php foreach ($sidebarBrands as $brand): ?>
             <li>
                 <a href="/~fatma.abdourahmane/Ecommerce-class/Lab3/?brand=<?php echo (int) $brand['brand_id']; ?>">
-                    <?php echo htmlspecialchars($brand['brand_name']); ?>
+                    <?php
+                    echo htmlspecialchars(
+                        $brand['brand_name'],
+                        ENT_QUOTES,
+                        'UTF-8'
+                    );
+                    ?>
                 </a>
             </li>
         <?php endforeach; ?>

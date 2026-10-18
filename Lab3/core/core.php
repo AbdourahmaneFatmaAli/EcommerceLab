@@ -18,7 +18,7 @@ function is_admin()
 function require_login()
 {
     if (!is_logged_in()) {
-        header("Location: ../views/login.php");
+        header("Location: /~fatma.abdourahmane/Ecommerce-class/Lab3/views/login.php");
         exit;
     }
 }
@@ -27,7 +27,16 @@ function require_admin()
 {
     if (!is_admin()) {
         $_SESSION['error'] = "You do not have permission to access this page.";
-        header("Location: ../index.php");
+        header("Location: /~fatma.abdourahmane/Ecommerce-class/Lab3/index.php");
         exit;
     }
+}
+
+function get_ip()
+{
+    if (!empty($_SERVER['REMOTE_ADDR'])) {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+
+    return '0.0.0.0';
 }
