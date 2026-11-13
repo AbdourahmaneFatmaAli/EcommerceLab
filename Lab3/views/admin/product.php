@@ -42,7 +42,7 @@ if ($editId !== '') {
 
     <title><?php echo $editProduct ? "Edit Product" : "Manage Products"; ?></title>
 
-    <link rel="stylesheet" href="/~fatma.abdourahmane/~fatma.abdourahmane/Ecommerce-class/Lab3/css/style.css">
+    <link rel="stylesheet" href="/~fatma.abdourahmane/Ecommerce-class/Lab3/css/style.css">
 </head>
 
 <body>

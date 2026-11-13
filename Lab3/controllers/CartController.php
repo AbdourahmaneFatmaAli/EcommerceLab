@@ -1,3 +1,4 @@
+
 <?php
 
 require_once __DIR__ . "/../classes/CartClass.php";
@@ -41,15 +42,33 @@ class CartController
         return $this->cart->getCartTotal($ip);
     }
 
-    // Remove a product from the cart.
     public function removeFromCart($product_id, $ip)
     {
         return $this->cart->removeFromCart($product_id, $ip);
     }
 
-    // Update a product's quantity.
     public function updateQty($product_id, $new_qty, $ip)
     {
         return $this->cart->updateQty($product_id, $new_qty, $ip);
+    }
+
+    // Process a verified payment and create an order.
+    public function processPayment($customer_id, $ip, $reference, $amount)
+    {
+        return $this->cart->processPayment(
+            $customer_id,
+            $ip,
+            $reference,
+            $amount
+        );
+    }
+    public function getCustomerOrders($customer_id)
+{
+    return $this->cart->getCustomerOrders($customer_id);
+}
+    // Retrieve order details for the invoice.
+    public function getOrderById($order_id)
+    {
+        return $this->cart->getOrderById($order_id);
     }
 }

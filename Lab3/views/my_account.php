@@ -1,3 +1,4 @@
+
 <?php
 
 require_once __DIR__ . "/../core/core.php";
@@ -205,27 +206,6 @@ $customerEmail = htmlspecialchars(
             color: white;
         }
 
-        .coming-soon-card {
-            cursor: default;
-        }
-
-        .coming-soon-card:hover {
-            transform: none;
-            border-color: #f3d4e3;
-            box-shadow: 0 7px 20px rgba(214, 51, 132, 0.07);
-        }
-
-        .coming-soon {
-            display: inline-block;
-            margin-top: 18px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: #fff0f6;
-            color: #d63384;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
         @media (max-width: 750px) {
 
             .account-page {
@@ -342,11 +322,14 @@ $customerEmail = htmlspecialchars(
                     <span class="link-label">Manage Products</span>
                 </a>
 
-                <div class="dashboard-card coming-soon-card">
-                    <h3>Customers</h3>
-                    <p>View and manage your store customers.</p>
-                    <span class="coming-soon">Coming soon</span>
-                </div>
+               <a
+    href="customers.php"
+    class="dashboard-card link-card"
+>
+    <h3>Customers</h3>
+    <p>View and manage your store customers.</p>
+    <span class="link-label">Manage Customers</span>
+</a>
 
             </div>
 
@@ -406,28 +389,11 @@ $customerEmail = htmlspecialchars(
                     <span class="link-label">Start Shopping</span>
                 </a>
 
-                <div class="dashboard-card">
-                    <h3>My Profile</h3>
-                    <p>View your personal account information.</p>
-                </div>
-
-                <div class="dashboard-card coming-soon-card">
+                <a href="my_orders.php" class="dashboard-card link-card">
                     <h3>My Orders</h3>
-                    <p>Your orders will appear here.</p>
-                    <span class="coming-soon">Coming soon</span>
-                </div>
-
-                <div class="dashboard-card coming-soon-card">
-                    <h3>Favorites</h3>
-                    <p>Save products you love for later.</p>
-                    <span class="coming-soon">Coming soon</span>
-                </div>
-
-                <div class="dashboard-card coming-soon-card">
-                    <h3>Account Settings</h3>
-                    <p>Manage your account preferences.</p>
-                    <span class="coming-soon">Coming soon</span>
-                </div>
+                    <p>View your previous orders, invoices and payment status.</p>
+                    <span class="link-label">View My Orders</span>
+                </a>
 
             </div>
 
@@ -442,4 +408,3 @@ $customerEmail = htmlspecialchars(
 </body>
 
 </html>
-

@@ -1,6 +1,6 @@
 <?php
 
-require_once "../classes/CustomerClass.php";
+require_once __DIR__ . "/../classes/CustomerClass.php";
 
 class CustomerController
 {

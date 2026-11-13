@@ -129,7 +129,32 @@ require_once __DIR__ . "/layout/header.php";
     background: #a61e62;
     color: #ffffff;
 }
+.cart-container a.cart-button,
+.cart-container a.cart-button:link,
+.cart-container a.cart-button:visited {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 40px;
+    padding: 10px 16px;
+    background: #d63384 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px;
+    text-decoration: none !important;
+    cursor: pointer;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    font-family: inherit;
+    white-space: nowrap;
+    margin: 0;
+}
 
+.cart-container a.cart-button:hover {
+    background: #a61e62 !important;
+    color: #ffffff !important;
+}
 .cart-container a.continue-shopping,
 .cart-container a.continue-shopping:link,
 .cart-container a.continue-shopping:visited,
@@ -394,7 +419,12 @@ require_once __DIR__ . "/layout/header.php";
                 class="continue-shopping"
                 href="/~fatma.abdourahmane/Ecommerce-class/Lab3/index.php"
             >Continue Shopping</a>
+            <a
+                class="cart-button"
+                href="payment.php"
+            >Proceed to Payment</a>
         </div>
+        
 
     <?php } ?>
 </div>
